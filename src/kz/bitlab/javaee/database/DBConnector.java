@@ -1,6 +1,7 @@
 package kz.bitlab.javaee.database;
 
 import kz.bitlab.javaee.models.Category;
+import kz.bitlab.javaee.models.Comment;
 import kz.bitlab.javaee.models.News;
 import kz.bitlab.javaee.models.User;
 
@@ -293,6 +294,91 @@ public class DBConnector {
             preparedStatement.executeUpdate();
             preparedStatement.close();
         }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public static void addComment(Comment comment){
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO comments(comment,post_date,user_id,news_id) VALUES (?,?,?,?)");
+            preparedStatement.setString(1, comment.getComment());
+            preparedStatement.setTimestamp(2, comment.getPostDate());
+            preparedStatement.setLong(3, comment.getUser().getId());
+            preparedStatement.setLong(4, comment.getNews().getId());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public static ArrayList<Comment> getComments(){
+        ArrayList<Comment> comments = new ArrayList<>();
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM comments");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()){
+                Comment comment = new Comment();
+                comment.setId(resultSet.getLong("id"));
+                comment.setComment(resultSet.getString("comment"));
+                comment.setPostDate(resultSet.getTimestamp("post_date"));
+                User user = getUserById(resultSet.getLong("user_id"));
+                if(user != null){
+                    comment.setUser(user);
+                }
+                News news = getNewsById(resultSet.getLong("news_id"));
+                if(news != null){
+                    comment.setNews(news);
+                }
+                comments.add(comment);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return comments;
+    }
+    public static Comment getCommentById(Long id){
+        Comment comment = null;
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM comments WHERE id = ?");
+            preparedStatement.setLong(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                comment = new Comment();
+                comment.setId(resultSet.getLong("id"));
+                comment.setComment(resultSet.getString("comment"));
+                comment.setPostDate(resultSet.getTimestamp("post_date"));
+                User user = getUserById(resultSet.getLong("user_id"));
+                if(user != null){
+                    comment.setUser(user);
+                }
+                News news = getNewsById(resultSet.getLong("news_id"));
+                if(news != null){
+                    comment.setNews(news);
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return comment;
+    }
+    public static void deleteComment(Long id){
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM comments WHERE id = ?");
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void updateComment(Comment comment){
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE comments SET comment = ? WHERE id = ?");
+            preparedStatement.setString(1, comment.getComment());
+            preparedStatement.setLong(2, comment.getId());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

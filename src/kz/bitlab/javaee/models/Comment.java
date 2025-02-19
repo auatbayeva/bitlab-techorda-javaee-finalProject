@@ -1,16 +1,17 @@
 package kz.bitlab.javaee.models;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class Comment {
     private Long id;
     private String comment;
-    private LocalDateTime postDate;
+    private Timestamp postDate;
     private User user;
     private News news;
 
     public Comment() {}
-    public Comment(String comment, LocalDateTime postDate, User user, News news) {
+    public Comment(String comment, Timestamp postDate, User user, News news) {
         this.comment = comment;
         this.postDate = postDate;
         this.user = user;
@@ -33,11 +34,11 @@ public class Comment {
         this.comment = comment;
     }
 
-    public LocalDateTime getPostDate() {
+    public Timestamp getPostDate() {
         return postDate;
     }
 
-    public void setPostDate(LocalDateTime postDate) {
+    public void setPostDate(Timestamp postDate) {
         this.postDate = postDate;
     }
 

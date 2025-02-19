@@ -2,6 +2,8 @@
 <%@ page import="java.sql.Timestamp, java.text.SimpleDateFormat" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="kz.bitlab.javaee.models.News" %>
+<%@ page import="kz.bitlab.javaee.models.Comment" %>
+<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <!DOCTYPE html>
@@ -11,7 +13,11 @@
 
 <body id="page-top">
 
-<% User user = (User) request.getAttribute("user"); %>
+<% User user = (User) request.getAttribute("user");
+    List<Comment> comments = (List<Comment>) request.getAttribute("comments");
+    List<News> news = (List<News>) request.getAttribute("news");
+    SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy");
+%>
 <!-- Page Wrapper -->
 <div id="wrapper">
 
@@ -77,13 +83,12 @@
                     <h1 class="h3 mb-0 text-gray-800">News</h1>
                 </div>
 
-                <% ArrayList<News> news = (ArrayList<News>) request.getAttribute("news");
-                for (News post : news){%>
+                <%for (News post : news){%>
                     <div class="row ">
                         <div class="card shadow mb-4 col-8">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary"><%=post.getTitle()%></h6>
-                                <% SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy");
+                                <%
                                 String formattedDate = sdf.format(post.getPostDate());
                                 %>
                                 <p class="mb-0 text-muted" ><%=formattedDate%></p>
@@ -95,25 +100,36 @@
                                     <textarea class="form-control" type="text" name="comment" placeholder="Type your comment here"></textarea>
                                     <button class="btn btn-primary mt-1" type="submit">Send</button>
                                 </form>
-                                <div class="row mt-4">
-                                    <div class="card mb-3x w-100">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <div class="d-flex align-items-center">
-                                                    <img class="img-profile rounded-circle" src="img/undraw_profile.svg" style="width:5%">
-                                                    <div class="mx-2">
-                                                        <p class="card-title mb-0 text-primary">John Doe</p>
-                                                        <small class="text-muted">Posted on July 17, 2024</small>
+                                <% for(Comment comment : comments){
+                                    if(comment.getNews().getId() == post.getId()){%>
+                                    <div class="row mt-4">
+                                        <div class="card mb-3x w-100">
+                                            <div class="card-body">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <img class="img-profile rounded-circle" src="img/undraw_profile.svg" style="width:5%">
+                                                        <div class="mx-2">
+                                                            <p class="card-title mb-0 text-primary"><%=comment.getUser().getFirstName()%> <%=comment.getUser().getLastName()%></p>
+                                                            <%String formattedDate1 = sdf.format(comment.getPostDate());%>
+                                                            <small class="text-muted"><%=formattedDate1%></small>
+                                                        </div>
                                                     </div>
+                                                    <% if(comment.getUser().getId() == user.getId()) {%>
+                                                    <form action="/deleteComment" method="post">
+                                                        <input type="hidden" name="commentId" value="<%=comment.getId()%>">
+                                                        <button class="btn btn-sm btn-outline-danger">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                    <%}%>
                                                 </div>
-                                                <button class="btn btn-sm btn-outline-danger">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
+                                                <p class="card-text"><%=comment.getComment()%></p>
                                             </div>
-                                            <p class="card-text">This is a great article! I learned a lot from it. Keep up the good work!</p>
                                         </div>
                                     </div>
-                                </div>
+                                <% }
+                                } %>
+
                             </div>
                         </div>
                     </div>

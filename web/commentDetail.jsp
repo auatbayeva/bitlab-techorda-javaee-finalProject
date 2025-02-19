@@ -1,6 +1,6 @@
 <%@ page import="kz.bitlab.javaee.models.User" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="java.util.List" %>
+<%@ page import="kz.bitlab.javaee.models.Category" %>
 <%@ page import="kz.bitlab.javaee.models.Comment" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
@@ -12,12 +12,14 @@
 <body id="page-top">
 
 <% User user = (User) request.getAttribute("user"); %>
+<% Comment comment = (Comment) request.getAttribute("comment");
+    if(comment!=null){%>
 <!-- Page Wrapper -->
 <div id="wrapper">
      <!-- Sidebar -->
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
             <div class="sidebar-brand-icon rotate-n-15">
                 <i class="fas fa-laugh-wink"></i>
             </div>
@@ -95,45 +97,47 @@
             <!-- End of Topbar -->
 
             <!-- Begin Page Content -->
-            <div class="container-fluid">
+            <div class="container">
                 <!-- Content Row -->
                 <div class="row">
 
                     <div class="card shadow mb-4 col-lg-8">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Comments</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Comment</h6>
                         </div>
-                        <div class="card-body">
 
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="dataTable" >
-                                    <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Comment</th>
-                                        <th>User</th>
-                                        <th>Post</th>
-                                        <th>Post Date</th>
-                                        <th>Details</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <% List<Comment> comments =(List<Comment>) request.getAttribute("comments");
-                                        for(Comment comment : comments){%>
-                                        <tr>
-                                            <td><%=comment.getId()%></td>
-                                            <td><%=comment.getComment()%></td>
-                                            <td><%=comment.getUser().getFirstName()%> <%=comment.getUser().getLastName()%></td>
-                                            <td><%=comment.getNews().getTitle()%></td>
-                                            <td><%=comment.getPostDate()%></td>
-                                            <td>
-                                                <a href="/commentDetail?id=<%=comment.getId()%>" class="btn btn-primary">Details</a>
-                                            </td>
-                                        </tr>
-                                    <%}%>
-                                    </tbody>
-                                </table>
-                            </div>
+
+                        <!-- Modal -->
+
+                        <div class="card-body">
+                            <form action="/editComment" method="post">
+                                <input type="hidden" name="commentId" value="<%=comment.getId()%>">
+                                <div class="form-group">
+                                    <label for="name" >Comment</label>
+                                    <textarea class="form-control form-control-user" id="name" name="comment" required><%=comment.getComment()%></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label>Author</label>
+                                    <a href="/userDetail?id=<%=comment.getUser().getId()%>" class="btn btn-primary"><%=comment.getUser().getFirstName()%> <%=comment.getUser().getLastName()%></a>
+                                </div>
+                                <div class="form-group">
+                                    <label >Post</label>
+                                    <a href="/newsDetail?id=<%=comment.getNews().getId()%>" class="btn btn-primary"><%=comment.getNews().getTitle()%></a>
+                                </div>
+                                <div class="form-group">
+                                    <label for="postDate" >Post Date</label>
+                                    <input type="text" class="form-control form-control-user" id="postDate" name="title" value="<%=comment.getPostDate()%>"
+                                           readonly>
+                                </div>
+                                <button type="submit" class="btn btn-warning" data-bs-dismiss="modal">Edit</button>
+                                <!-- Button trigger modal -->
+                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">
+                                    Delete
+                                </button>
+
+                                <!-- Modal -->
+                               </form>
+
                         </div>
                     </div>
 
@@ -152,7 +156,26 @@
     <!-- End of Content Wrapper -->
 
 </div>
-<!-- End of Page Wrapper -->
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete Category</h5>
+            </div>
+            <div class="modal-body">
+                <h4>Are you sure?</h4>
+            </div>
+            <div class="modal-footer">
+                <form action="/deleteComment" method="post">
+                    <input type="hidden" name="commentId" value="<%=comment.getId()%>">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Scroll to Top Button-->
 <a class="scroll-to-top rounded" href="#page-top">
@@ -178,7 +201,7 @@
         </div>
     </div>
 </div>
-
+<%}%>
 <%@include file="common/footer.jsp"%>
 </body>
 
