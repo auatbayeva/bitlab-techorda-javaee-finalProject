@@ -269,4 +269,31 @@ public class DBConnector {
         }
         return user;
     }
+
+    public static void updateUser(User user){
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement("UPDATE users SET email = ?, password = ?, first_name = ?, last_name = ?, role_id = ?  WHERE id = ?");
+            preparedStatement.setString(1, user.getEmail());
+            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setString(3, user.getFirstName());
+            preparedStatement.setString(4, user.getLastName());
+            preparedStatement.setString(5, user.getRole_id());
+            preparedStatement.setLong(6, user.getId());
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void deleteUser(Long id){
+        try{
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM users WHERE id = ?");
+            preparedStatement.setLong(1, id);
+            preparedStatement.executeUpdate();
+            preparedStatement.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

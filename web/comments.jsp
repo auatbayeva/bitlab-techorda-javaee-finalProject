@@ -1,5 +1,5 @@
 <%@ page import="kz.bitlab.javaee.models.User" %>
-<%@ page import="java.sql.Timestamp, java.text.SimpleDateFormat" %>
+<%@ page import="kz.bitlab.javaee.models.Category" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="kz.bitlab.javaee.models.News" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -14,6 +14,41 @@
 <% User user = (User) request.getAttribute("user"); %>
 <!-- Page Wrapper -->
 <div id="wrapper">
+     <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-laugh-wink"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3"> Admin page </div>
+        </a>
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+        <!-- Nav Item - Charts -->
+        <li class="nav-item">
+            <a class="nav-link" href="/home">
+                <i class="fas fa-fw fa-chart-area"></i>
+                <span>News</span></a>
+        </li>
+        <!-- Nav Item - Tables -->
+        <li class="nav-item">
+            <a class="nav-link" href="/categories">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Categories</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/users">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Users</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="/comments">
+                <i class="fas fa-fw fa-table"></i>
+                <span>Comments</span></a>
+        </li>
+    </ul>
+    <!-- End of Sidebar -->
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
@@ -21,21 +56,11 @@
         <!-- Main Content -->
         <div id="content">
 
-
-
             <!-- Topbar -->
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-                <!-- Sidebar Toggle (Topbar) -->
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                    <i class="fa fa-bars"></i>
-                </button>
-
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
-
-
-                    <div class="topbar-divider d-none d-sm-block"></div>
 
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
@@ -70,59 +95,56 @@
             <!-- End of Topbar -->
 
             <!-- Begin Page Content -->
-            <div class="container">
+            <div class="container-fluid">
+                <!-- Content Row -->
+                <div class="row">
 
-                <!-- Page Heading -->
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">News</h1>
-                </div>
+                    <div class="card shadow mb-4 col-lg-8">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Comments</h6>
+                        </div>
+                        <div class="card-body">
 
-                <% ArrayList<News> news = (ArrayList<News>) request.getAttribute("news");
-                for (News post : news){%>
-                    <div class="row ">
-                        <div class="card shadow mb-4 col-8">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary"><%=post.getTitle()%></h6>
-                                <% SimpleDateFormat sdf = new SimpleDateFormat("d MMMM yyyy");
-                                String formattedDate = sdf.format(post.getPostDate());
-                                %>
-                                <p class="mb-0 text-muted" ><%=formattedDate%></p>
-                            </div>
-                            <div class="card-body">
-                                <h5 class="my-4 text-dark"><%=post.getContent()%></h5>
-                                <form action="/addComment" method="post">
-                                    <input type="hidden" name="postId" value="<%=post.getId()%>">
-                                    <textarea class="form-control" type="text" name="comment" placeholder="Type your comment here"></textarea>
-                                    <button class="btn btn-primary mt-1" type="submit">Send</button>
-                                </form>
-                                <div class="row mt-4">
-                                    <div class="card mb-3x w-100">
-                                        <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                                <div class="d-flex align-items-center">
-                                                    <img class="img-profile rounded-circle" src="img/undraw_profile.svg" style="width:5%">
-                                                    <div class="mx-2">
-                                                        <p class="card-title mb-0 text-primary">John Doe</p>
-                                                        <small class="text-muted">Posted on July 17, 2024</small>
-                                                    </div>
-                                                </div>
-                                                <button class="btn btn-sm btn-outline-danger">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </div>
-                                            <p class="card-text">This is a great article! I learned a lot from it. Keep up the good work!</p>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" >
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Full Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Details</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <% ArrayList<User> users =(ArrayList<User>) request.getAttribute("users");
+                                        for(User new_user : users){%>
+                                        <tr>
+                                            <td><%=new_user.getId()%></td>
+                                            <td><%=new_user.getFirstName()%> <%=new_user.getLastName()%></td>
+                                            <td><%=new_user.getEmail()%></td>
+                                            <td>
+                                                <% if(new_user.getRole_id().equals(("1"))) {%>
+                                                Admin
+                                                <%} else {%>
+                                                User
+                                                <%}%></td>
+                                            <td>
+                                                <a href="/userDetail?id=<%=new_user.getId()%>" class="btn btn-primary">Details</a>
+                                            </td>
+                                        </tr>
+                                    <%}%>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
-                <%}%>
 
 
+                </div>
 
 
-
+            </div>
             <!-- /.container-fluid -->
 
         </div>
